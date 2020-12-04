@@ -101,6 +101,28 @@ class TestGradient(unittest.TestCase):
         self.assertAlmostEqual(x.grad.data, 0.040)
         self.assertAlmostEqual(y.grad.data, 0.040)
 
+    def test_clear_grad(self):
+        x = Variable(np.array(2.0))
+        y = 2 * x
+        y.backward()
+        x.clear_grad()
+        y = 3 * x
+        y.backward()
+        self.assertEqual(x.grad.data, np.array(3.0))
+
+    def test_higher_derivative(self):
+
+        x = Variable(np.array(2.0))
+        y = x ** 4 - 2 * x ** 2
+        y.backward()
+        self.assertEqual(x.grad.data, 24.0)
+
+        gx = x.grad
+        x.clear_grad()
+        gx.backward()
+        print(gx)
+        self.assertEqual(x.grad.data, 44.0)
+
 
 class TestOperation(unittest.TestCase):
 

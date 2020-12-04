@@ -3,6 +3,8 @@ from abc import ABCMeta, abstractmethod
 
 
 class Variable:
+    __array_priority__ = 200
+
     def __init__(self, x, name=None):
         if x is not None and not isinstance(x, np.ndarray):
             raise TypeError('{} is not supported'.format(type(x)))
@@ -27,7 +29,7 @@ class Variable:
 
     def backward(self):
         if self.grad is None:
-            self.grad = np.ones_like(self.data)
+            self.grad = Variable(np.ones_like(self.data))
 
         funcs = []
         seen_set = set()
@@ -104,7 +106,7 @@ class Square(Function):
         return x ** 2
 
     def backward(self, gy):
-        x = self.inputs[0].data
+        x = self.inputs[0]
         gx = 2 * x * gy
         return gx
 
@@ -136,7 +138,7 @@ class Mul(Function):
         return x0 * x1
     
     def backward(self, gy):
-        x0, x1 = self.inputs[0].data, self.inputs[1].data
+        x0, x1 = self.inputs
         return gy * x1, gy * x0
 
 class Div(Function):
@@ -144,7 +146,7 @@ class Div(Function):
         return x0 / x1
 
     def backward(self, gy):
-        x0, x1 = self.inputs[0].data, self.inputs[1].data
+        x0, x1 = self.inputs
         return gy * (1/x1), gy * (-x0 / x1 ** 2)
 
 class Pow(Function):

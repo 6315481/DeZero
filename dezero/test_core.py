@@ -30,7 +30,7 @@ class TestGradient(unittest.TestCase):
         y = A(x)
 
         y.backward()
-        self.assertEqual(x.grad, 2.0)
+        self.assertEqual(x.grad.data, 2.0)
 
     def test_gradient_composition(self):
         x = Variable(np.array(0.5))
@@ -45,7 +45,7 @@ class TestGradient(unittest.TestCase):
        
         y.backward()
 
-        self.assertAlmostEqual(x.grad, 3.2974425)
+        self.assertAlmostEqual(x.grad.data, 3.2974425)
     
     def test_gradient_add(self):
         x = Variable(np.array(2.0))
@@ -53,7 +53,7 @@ class TestGradient(unittest.TestCase):
         y = f(x, x)
 
         y.backward()
-        self.assertEqual(x.grad, 2.0)
+        self.assertEqual(x.grad.data, 2.0)
 
         x0 = Variable(np.array(2.0))
         x1 = Variable(np.array(1.0))
@@ -61,8 +61,8 @@ class TestGradient(unittest.TestCase):
 
         y = f(x0, x1)
         y.backward()
-        self.assertEqual(x0.grad, 1.0)
-        self.assertEqual(x1.grad, 1.0)
+        self.assertEqual(x0.grad.data, 1.0)
+        self.assertEqual(x1.grad.data, 1.0)
 
     def test_gradient_quater_function(self):
         x = Variable(np.array(2.0))
@@ -70,23 +70,23 @@ class TestGradient(unittest.TestCase):
         y = Add()(Square()(a), Square()(a))
         y.backward()
 
-        self.assertEqual(x.grad, 64.0)
+        self.assertEqual(x.grad.data, 64.0)
 
     def test_gradient_with_constant(self):
         x = Variable(np.array(4.0))
         y = 2.0 * x
         y.backward()
-        self.assertEqual(x.grad, 2.0)
+        self.assertEqual(x.grad.data, 2.0)
 
         x = Variable(np.array(4.0))
         y = x / 2.0
         y.backward()
-        self.assertEqual(x.grad, 0.5)
+        self.assertEqual(x.grad.data, 0.5)
 
         x = Variable(np.array(2.0))
         y = 2.0 / x
         y.backward()
-        self.assertEqual(x.grad, -0.5)
+        self.assertEqual(x.grad.data, -0.5)
 
     def test_gradient_matyas(self):
    
@@ -98,8 +98,8 @@ class TestGradient(unittest.TestCase):
         z = matyas(x, y)
         z.backward()
 
-        self.assertAlmostEqual(x.grad, 0.040)
-        self.assertAlmostEqual(y.grad, 0.040)
+        self.assertAlmostEqual(x.grad.data, 0.040)
+        self.assertAlmostEqual(y.grad.data, 0.040)
 
 
 class TestOperation(unittest.TestCase):

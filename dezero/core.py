@@ -137,7 +137,7 @@ class Mul(Function):
     
     def backward(self, gy):
         x0, x1 = self.inputs[0].data, self.inputs[1].data
-        return gy * x0, gy * x1
+        return gy * x1, gy * x0
 
 class Div(Function):
     def forward(self, x0, x1):
@@ -158,7 +158,7 @@ class Pow(Function):
     def backward(self, gy):
         x = self.inputs[0].data
         c = self.c
-        return c * x ** (c-1) * gy
+        return c * gy * (x ** (c-1))
 
 
 def as_array(x):
@@ -174,9 +174,6 @@ def as_variable(x):
 def add(x0, x1):
     return Add()(x0, as_variable(as_array(x1)))
 
-def radd(x0, x1):
-        return Add()(as_variable(as_array(x1)), x0)
-
 def sub(x0, x1):
     return Sub()(x0, as_variable(as_array(x1)))
 
@@ -185,9 +182,6 @@ def rsub(x0, x1):
 
 def mul(x0, x1):
     return Mul()(x0, as_variable(as_array(x1)))
-
-def rmul(x0, x1):
-    return Mul()(as_variable(as_array(x1)), x0)
 
 def div(x0, x1):
     return Div()(x0, as_variable(as_array(x1)))
@@ -204,11 +198,11 @@ def pow(x, c):
 
 def setup_variables():
     Variable.__add__ = add
-    Variable.__radd__ = radd
+    Variable.__radd__ = add
     Variable.__sub__ = sub
     Variable.__rsub__ = rsub
     Variable.__mul__ = mul
-    Variable.__rmul__ = rmul
+    Variable.__rmul__ = mul
     Variable.__truediv__ = div
     Variable.__rtruediv__ = rdiv
     Variable.__pow__ = pow

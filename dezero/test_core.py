@@ -72,6 +72,36 @@ class TestGradient(unittest.TestCase):
 
         self.assertEqual(x.grad, 64.0)
 
+    def test_gradient_with_constant(self):
+        x = Variable(np.array(4.0))
+        y = 2.0 * x
+        y.backward()
+        self.assertEqual(x.grad, 2.0)
+
+        x = Variable(np.array(4.0))
+        y = x / 2.0
+        y.backward()
+        self.assertEqual(x.grad, 0.5)
+
+        x = Variable(np.array(2.0))
+        y = 2.0 / x
+        y.backward()
+        self.assertEqual(x.grad, -0.5)
+
+    def test_gradient_matyas(self):
+   
+        def matyas(x, y):
+            z = 0.26 * (x ** 2 + y ** 2) - 0.48 * x * y
+            return z
+        x = Variable(np.array(1.0))
+        y = Variable(np.array(1.0))
+        z = matyas(x, y)
+        z.backward()
+
+        self.assertAlmostEqual(x.grad, 0.040)
+        self.assertAlmostEqual(y.grad, 0.040)
+
+
 class TestOperation(unittest.TestCase):
 
     def test_basic_operation(self):

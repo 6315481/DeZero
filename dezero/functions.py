@@ -32,6 +32,14 @@ class Reshape(Function):
     def backward(self, gy):
         return reshape(gy, self.x_shape)
 
+class Transpose(Function):
+
+    def forward(self, x):
+        return np.transpose(x)
+    
+    def backward(self, gy):
+        return Transpose()(gy)
+
 
 def sin(x):
     return Sin()(x)
@@ -41,3 +49,6 @@ def cos(x):
 
 def reshape(x, shape):
     return Reshape(shape)(x)
+
+def transpose(x):
+    return Transpose()(x)

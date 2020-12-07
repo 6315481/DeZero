@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from numpy.testing import assert_array_equal
-from dezero.functions import sin, cos, reshape, transpose, sum
+from dezero.functions import sin, cos, reshape, transpose, sum, matmul
 from dezero.core import Variable, Function
 
 
@@ -70,3 +70,14 @@ class TestFunctions(unittest.TestCase):
 
         assert_array_equal(x.grad.data, np.array([1, 1, 1]))
         assert_array_equal(y.grad.data, np.array([3.0]))
+
+    def test_matmul(self):
+
+        x = Variable(np.array([[1, 1], [1, 1]]))
+        W = Variable(np.array([[2], [2]]))
+        y = matmul(x, W)
+        y.backward()
+
+        assert_array_equal(y.data, np.array([[4], [4]]))
+        assert_array_equal(x.grad.data, np.array([[2, 2], [2, 2]]))
+        assert_array_equal(W.grad.data, np.array([[2], [2]]))

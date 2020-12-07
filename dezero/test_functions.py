@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from numpy.testing import assert_array_equal
-from dezero.functions import sin, cos, reshape, transpose
+from dezero.functions import sin, cos, reshape, transpose, sum
 from dezero.core import Variable, Function
 
 
@@ -48,3 +48,25 @@ class TestFunctions(unittest.TestCase):
         y.backward()
         assert_array_equal(y.data, np.transpose(x.data))
         assert_array_equal(x.grad.data, np.array([[1, 1, 1], [1, 1, 1]]))
+    
+    def test_sum(self):
+        x = Variable(np.array([[1, 2, 3], [4, 5, 6]]))
+
+        assert_array_equal(sum(x).data, x.data.sum())
+        assert_array_equal(sum(x, axis=0).data, x.data.sum(axis=0))
+        assert_array_equal(sum(x, keepdims=True).data, x.data.sum(keepdims=True))
+        
+        y = 2 * sum(x, axis=0)
+        y.backward()        
+        assert_array_equal(x.grad.data, np.array([[2, 2, 2], [2, 2, 2]]))
+    
+
+    def test_gradient_add_with_differentsize_array(self):
+
+        x = Variable(np.array([1.0, 2.0, 3.0]))
+        y = Variable(np.array([2.0]))
+        z = x + y
+        z.backward()
+
+        assert_array_equal(x.grad.data, np.array([1, 1, 1]))
+        assert_array_equal(y.grad.data, np.array([3.0]))

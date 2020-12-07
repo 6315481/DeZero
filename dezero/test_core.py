@@ -1,5 +1,7 @@
 import unittest
 import numpy as np
+import dezero
+from numpy.testing import assert_array_equal
 from dezero.core import Function, Variable, Square, Exp, Add
 
 

@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from numpy.testing import assert_array_equal
-from dezero.functions import sin, cos, reshape, transpose, sum, matmul
+from dezero.functions import sin, cos, reshape, transpose, sum, matmul, sigmoid
 from dezero.core import Variable, Function
 
 
@@ -81,3 +81,12 @@ class TestFunctions(unittest.TestCase):
         assert_array_equal(y.data, np.array([[4], [4]]))
         assert_array_equal(x.grad.data, np.array([[2, 2], [2, 2]]))
         assert_array_equal(W.grad.data, np.array([[2], [2]]))
+
+    def test_sigmoid(self):
+
+        x = Variable(np.array([[1], [2]]))
+        y = sigmoid(x)
+        y.backward()
+        assert_array_equal(y.data, np.array([[1 / (1 + np.exp(-1))], [1 / (1 + np.exp(-2))]]))
+        assert_array_equal(x.grad.data, np.array([[np.exp(-1) / (1 + np.exp(-1)) ** 2], [np.exp(-2) / (1 + np.exp(-2)) ** 2]]))
+

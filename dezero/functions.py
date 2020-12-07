@@ -1,6 +1,6 @@
 import numpy as np
 import dezero.utils as utils
-from dezero.core import Variable, Function
+from dezero.core import Variable, Function, as_variable
 
 class Sin(Function):
 
@@ -19,6 +19,15 @@ class Cos(Function):
     def backward(self, gy):
         x = self.inputs[0].data
         return -np.sin(x) * gy
+
+class Exp(Function):
+    def forward(self, x):
+        return np.exp(x)
+
+    def backward(self, gy):
+        x = self.inputs[0].data
+        gx = np.exp(x) * gy
+        return gx
 
 class Reshape(Function):
 
@@ -94,13 +103,27 @@ class MatMul(Function):
         gW = matmul(x.transpose(), gy)
 
         return gx, gW
-        
+
+
+class Sigmoid(Function):
+
+    def forward(self, x):
+        y = 1 / (1 + np.exp(-x))
+        return y
+    
+    def backward(self, gy):
+        x = self.inputs[0]
+        gx = gy * exp(-x) / (1 + exp(-x)) ** 2
+        return gx
 
 def sin(x):
     return Sin()(x)
 
 def cos(x):
     return Cos()(x)
+
+def exp(x):
+    return Exp()(x)
 
 def reshape(x, shape):
     return Reshape(shape)(x)
@@ -119,3 +142,10 @@ def sum_to(x, shape):
 
 def matmul(x, W):
     return MatMul()(x, W)
+
+def linear(x, W, b):
+    return matmul(x, W) + b
+
+def sigmoid(x):
+    return Sigmoid()(x)
+

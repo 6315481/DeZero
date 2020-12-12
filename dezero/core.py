@@ -110,6 +110,8 @@ class Function:
     def backward(self, gy):
         raise NotImplementedError()
 
+class Parameter(Variable):
+    pass
 
 
 class Square(Function):

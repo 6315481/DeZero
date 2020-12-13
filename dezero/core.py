@@ -2,6 +2,7 @@ import numpy as np
 from abc import ABCMeta, abstractmethod
 import dezero
 
+
 class Variable:
     __array_priority__ = 200
 
@@ -227,4 +228,5 @@ def setup_variables():
     Variable.__rtruediv__ = rdiv
     Variable.__pow__ = pow
     Variable.__neg__ = neg
+    Variable.__getitem__ = dezero.functions.get_item
 

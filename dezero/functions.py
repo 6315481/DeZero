@@ -116,6 +116,49 @@ class Sigmoid(Function):
         gx = gy * exp(-x) / (1 + exp(-x)) ** 2
         return gx
 
+class Log(Function):
+
+    def forward(self, x):
+        y = np.log(x)
+        return y
+    
+    def backward(self, gy):
+        x = self.inputs[0]
+        gx = gy * 1 / x
+        return gx
+
+class GetItem(Function):
+
+    def __init__(self, slices):
+        self.slices = slices
+    
+    def forward(self, x):
+        y = x[self.slices]
+        return y
+    
+    def backward(self, gy):
+        x = self.inputs[0]
+        f =  GetItemGrad(self.slices, x.shape)
+        return f(gy)
+
+class GetItemGrad(Function):
+
+    def __init__(self, slices, in_shape):
+        self.slices = slices
+        self.in_shape = in_shape
+    
+    def forward(self, gy):
+        gx = np.zeros(self.in_shape)
+        np.add.at(gx, self.slices, gy)
+        return gx
+    
+    def backward(self, ggx):
+        return get_item(ggx, self.slices)
+
+
+def get_item(x, slices):
+    return GetItem(slices)(x)
+
 def sin(x):
     return Sin()(x)
 
@@ -149,3 +192,21 @@ def linear(x, W, b):
 def sigmoid(x):
     return Sigmoid()(x)
 
+def log(x):
+    return Log()(x)
+
+def softmax(x, axis=1):
+    x = as_variable(x)
+    y = exp(x)
+    sum_y = sum(y, axis=1, keepdims=True)
+    return y / sum_y
+
+
+def softmax_cross_entropy(x, t):
+    x, t = as_variable(x), as_variable(t)
+    N = x.shape[0]
+    p = softmax(x)
+    log_p = log(p)
+    tlog_p = log_p[np.arange(N), t.data]
+    y = -1 * sum(tlog_p) / N
+    return y

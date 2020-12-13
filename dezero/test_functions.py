@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from numpy.testing import assert_array_equal
-from dezero.functions import sin, cos, reshape, transpose, sum, matmul, sigmoid
+from dezero.functions import sin, cos, reshape, transpose, sum, matmul, sigmoid, softmax, log, softmax_cross_entropy
 from dezero.core import Variable, Function
 
 
@@ -89,4 +89,43 @@ class TestFunctions(unittest.TestCase):
         y.backward()
         assert_array_equal(y.data, np.array([[1 / (1 + np.exp(-1))], [1 / (1 + np.exp(-2))]]))
         assert_array_equal(x.grad.data, np.array([[np.exp(-1) / (1 + np.exp(-1)) ** 2], [np.exp(-2) / (1 + np.exp(-2)) ** 2]]))
+
+    def test_softmax(self):
+        x = np.array([[1.0, 1.0, 1.0]])
+        y = softmax(x)
+
+        p = np.exp(1.0) / (3 * np.exp(1.0))
+        assert_array_equal(y.data, np.array([[p, p, p]]))
+
+    def test_log(self):
+        x = Variable(np.array(2.0))
+        y = log(x)
+        assert_array_equal(y.data, np.array(np.log(2.0)))
+        y.backward()
+        assert_array_equal(x.grad.data, np.array(1 / 2.0))
+    
+    def test_softmax_cross_entropy(self):
+        x = Variable(np.array([[1.0, 1.0, 1.0], [3.0, 2.0, 1.0]]))
+        t = Variable(np.array([1, 0]))
+
+        y = softmax_cross_entropy(x, t)
+        p_1 = np.log(np.exp(1.0) / (3 * np.exp(1.0)))
+        p_2 = np.log(np.exp(3.0) / (np.exp(3.0) + np.exp(2.0) + np.exp(1.0)))
+        expected_ans = -(p_1 + p_2) / 2
+        assert_array_equal(y.data, np.array(expected_ans))
+        
+    def test_get_item(self):
+        x = Variable(np.array([[1, 1, 1], [2, 2, 2]]))
+        y = x[1]
+        assert_array_equal(y.data, np.array([2, 2, 2]))
+        y.backward()
+        expected_grad = np.array([[0, 0, 0], [1, 1, 1]])
+        assert_array_equal(x.grad.data, expected_grad)
+
+        x = Variable(np.array([[1, 1, 1], [2, 2, 2]]))
+        y = x[np.arange(2), [0, 1]]
+        assert_array_equal(y.data, np.array([1, 2]))
+        y.backward()
+        expected_grad = np.array([[1, 0, 0], [0, 1, 0]])
+        assert_array_equal(x.grad.data, expected_grad)
 

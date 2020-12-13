@@ -21,6 +21,7 @@ iters = 10000
 model = L.MLP((10, 10, 10, 10, 1))
 optimizer = optimizers.SGD(lr)
 optimizer.setup(model)
+
 for i in range(iters):
     y_pred = model(x)
     loss = mean_squared_error(y, y_pred)

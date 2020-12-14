@@ -7,7 +7,7 @@ class DataLoader:
     def __init__(self, dataset, batch_size, shuffle=True):
         self.dataset = dataset
         self.batch_size = batch_size
-        self.shuffle = self.shuffle
+        self.shuffle = shuffle
         self.data_size = len(dataset)
         self.max_iter = math.ceil(self.data_size / batch_size)
 

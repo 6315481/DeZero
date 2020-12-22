@@ -23,3 +23,7 @@ class Dataset:
     def prepare(self):
         pass
 
+
+class MNIST(Dataset):
+
+    def prepare(self):

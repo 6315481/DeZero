@@ -12,6 +12,7 @@ class Optimizer:
     def update(self):
         params = [p for p in self.target.params() if p.grad is not None]
 
+        #preprocess the parameters 
         for f in self.hooks:
             f(params)
         
